@@ -2,8 +2,11 @@
 #include <random>
 #include <thread>   
 #include <SFML/Graphics.hpp>
+#include "TextureManager.h"
+#include "Pickup.h"
 #include "Player.h"
 #include "Bot.h"
+#include "HUD.h"
 
 class Engine
 {
@@ -16,21 +19,20 @@ public:
 	void start();
 
 private:
+	// Texturing
+	TextureManager tm;
+
 	// Rendering window
 	sf::RenderWindow mWindow;
 	int mWindowResX;
 	int mWindowResY;
 
+	// HUD
+	HUD hud;
+
 	// Background
 	sf::Sprite mBackgroundSprite;
-	sf::Texture mBackgroundTexture;
 	std::string mBackgroundTextureFilepath;
-
-	// Score
-	int score;
-	sf::Font font;
-	sf::Text ammoText;
-	sf::Text scoreText;
 
 	// Player
 	sf::Vector2f playerStartingPosition;
@@ -41,11 +43,18 @@ private:
 	std::string botTextureFilepath;
 	std::vector<std::unique_ptr<Bot>> bots;
 	void botMover();
-	// Generate a random location at the top of the screen for bots to spawn
-	sf::Vector2f randomBotLocation();
+	
+	// Generate a random location within the area
+	sf::Vector2f randomLocation(sf::FloatRect area);
 
 	// Spawn a new bot in a random location off the top of the screen
 	std::unique_ptr<Bot> spawnNewBot();
+
+	// Pickups
+	std::vector<std::unique_ptr<Pickup>> pickups;
+	std::unique_ptr<Pickup> spawnNewPickup();
+	std::string ammoTextureFilepath;
+	int ammoPickupsCount = 0;
 
 	// Handle input
 	void inputHandler();

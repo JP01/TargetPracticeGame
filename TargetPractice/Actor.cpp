@@ -1,7 +1,7 @@
-#include "Actor.h"
 #include <iostream>
 #include <utility>
-
+#include "Actor.h"
+#include "TextureManager.h"
 Actor::Actor()
 {
 	Actor(sf::Vector2f(400, 0), "ActorDefault");
@@ -13,12 +13,7 @@ Actor::Actor(sf::Vector2f startingPosition, std::string textureFilePath)
 	, mStartingPosition(startingPosition)
 	, mSpeed(400.0f)
 {
-	if (!mTexture.loadFromFile(textureFilePath)) {
-		std::cerr << "Error loading actor texture" << std::endl;
-		// Handle the error in some way
-	}
-	
-	mSprite.setTexture(mTexture);
+	mSprite = sf::Sprite(TextureManager::getTexture(textureFilePath));
 	mSprite.setOrigin(mTexture.getSize().x / 2, mTexture.getSize().y / 2);
 	mPosition = mStartingPosition;
 }
@@ -64,6 +59,12 @@ sf::Vector2f Actor::getPosition()
 	return mPosition;
 }
 
+sf::Vector2f Actor::getCenter()
+{
+	return sf::Vector2f(
+		mPosition.x + mSprite.getGlobalBounds().width / 2,
+		mPosition.y + mSprite.getGlobalBounds().height / 2);
+}
 
 void Actor::resetPosition()
 {

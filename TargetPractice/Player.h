@@ -11,16 +11,33 @@ public:
 	// Takes a coordinate to shoot, returns true if shot fired
 	bool shoot(sf::Vector2f shotCoordinates);
 
-	// How much ammo the player has remaining
+	// Current player ammo
 	int getAmmo(); 
+	
+	// Set player ammo
+	void setAmmo(int ammo);
+
+	// Current player health
+	int getHealth();
+
+	// Reduce the players health by 10
+	void damage();
+
+	// Current player score
+	int getScore();
+
+	// Set the player score
+	void setScore(int score);
 
 private:
-	int ammo = 20; // Starting ammo
+	int mAmmo = 20; // Starting ammo
+	int mHealth = 100; // Starting health
+	int mScore = 0; // Starting score
 
 	sf::SoundBuffer shotSoundBuffer;
 	sf::Sound shotSound;
-	//sf::SoundBuffer reloadingSoundBuffer;
-	//sf::Sound reloadingSound;
+	sf::SoundBuffer reloadingSoundBuffer;
+	sf::Sound reloadingSound;
 
 	sf::Clock shotClock;
 };

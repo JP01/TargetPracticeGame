@@ -18,9 +18,6 @@ public:
 	// Return a copy of the actor sprite
 	sf::Sprite getSprite();
 
-	// Sets the origin point around which rotation should be applied
-	void setSpriteOrigin(sf::Vector2f origin);
-
 	void moveLeft(); // Move the actor left
 	void moveRight(); // Move the actor right
 	void moveUp(); // Move the actor up
@@ -32,21 +29,40 @@ public:
 	// Reset the position of the actor to its starting position
 	void resetPosition();
 
-	// Set the speed of the actor in pixels per second
-	void setSpeed(float newSpeed);
-
-
-	void aimAt(sf::Vector2f aimPosition); // Aim the actor towards a location
-
-	// Called every frame to update logic
-	void update(float elapsedTime);
+	// Get the center of the character
+	sf::Vector2f getCenter();
 
 	// Bounding box of the actor, for collision detection
 	sf::FloatRect getBoundingBox();
 
+	// Set the speed of the actor in pixels per second
+	void setSpeed(float newSpeed);
+
+	// Aim the actor towards a location
+	void aimAt(sf::Vector2f aimPosition);
+
+	// Called every frame to update logic
+	void update(float elapsedTime);
+
 private:
 	// Current position of the Actor
 	sf::Vector2f mPosition;
+
+	// Speed of the actor in pixels/second
+	float mSpeed;
+
+	// Texture for the sprite
+	sf::Texture mTexture;
+
+protected:
+	// Sprite for the actor
+	sf::Sprite mSprite;
+
+	// Sets the origin point around which rotation should be applied
+	void setSpriteOrigin(sf::Vector2f origin);
+
+	// Starting position of the actor
+	sf::Vector2f mStartingPosition;
 
 	// Actor movement mapping
 	enum MovementAction
@@ -63,17 +79,5 @@ private:
 	bool mResetPosition;
 	std::map<MovementAction, sf::Vector2f> mMovementBinding;
 
-	// Speed of the actor in pixels/second
-	float mSpeed;
-
-	// Sprite for the actor
-	sf::Sprite mSprite;
-
-	// Texture for the sprite
-	sf::Texture mTexture;
-
-protected:
-	// Starting position of the actor
-	sf::Vector2f mStartingPosition;
 };
 
