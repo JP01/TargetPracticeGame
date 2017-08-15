@@ -48,7 +48,10 @@ void Engine::start()
 {
 	// Timer setup
 	sf::Clock clock;
-
+	sf::Music soundTrack;
+	soundTrack.openFromFile("../Resources/TPOST.ogg");
+	soundTrack.setLoop(true);
+	soundTrack.play();
 
 	while (mWindow.isOpen())
 	{
