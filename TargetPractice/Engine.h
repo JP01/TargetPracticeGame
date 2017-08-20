@@ -32,15 +32,12 @@ private:
 
 	// Background
 	sf::Sprite mBackgroundSprite;
-	std::string mBackgroundTextureFilepath;
 
 	// Player
 	sf::Vector2f playerStartingPosition;
-	std::string playerTextureFilepath;
 	Player player;
 
 	// Bots
-	std::string botTextureFilepath;
 	std::vector<std::unique_ptr<Bot>> bots;
 	void botMover();
 	
@@ -53,7 +50,6 @@ private:
 	// Pickups
 	std::vector<std::unique_ptr<Pickup>> pickups;
 	std::unique_ptr<Pickup> spawnNewPickup();
-	std::string ammoTextureFilepath;
 	int ammoPickupsCount = 0;
 
 	// Handle input

@@ -1,6 +1,6 @@
 #pragma once
-#include "SFML/sfml.h"
-#include "GameConfiguration.h"
+#include <SFML/sfml.h>
+#include "Config.h"
 #include "Engine.h"
 
 
@@ -8,8 +8,8 @@ int main()
 {
 	Engine engine(
 		sf::Vector2f(
-			GameConfiguration::WINDOW_WIDTH,
-			GameConfiguration::WINDOW_HEIGHT));
+			Config::WINDOW_WIDTH,
+			Config::WINDOW_HEIGHT));
 
 	engine.start();
 	return 0;

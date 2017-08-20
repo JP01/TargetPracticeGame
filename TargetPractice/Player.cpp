@@ -1,3 +1,4 @@
+#include "Config.h"
 #include "Player.h"
 
 
@@ -6,10 +7,10 @@ Player::Player(sf::Vector2f startingPosition, std::string textureFilePath)
 {
 	setSpriteOrigin(sf::Vector2f(83, 25)); // Coordinate location of origin on sprite
 
-	if (shotSoundBuffer.loadFromFile("../Resources/shot.wav")) {
+	if (shotSoundBuffer.loadFromFile(Config::GUNSHOT_SND_FILEPATH)) {
 		shotSound.setBuffer(shotSoundBuffer);
 	}
-	if (reloadingSoundBuffer.loadFromFile("../Resources/reload.wav")) {
+	if (reloadingSoundBuffer.loadFromFile(Config::RELOAD_SND_FILEPATH)) {
 		reloadingSound.setBuffer(reloadingSoundBuffer);
 	}
 }
@@ -18,7 +19,7 @@ Player::Player(sf::Vector2f startingPosition, std::string textureFilePath)
 bool Player::shoot(sf::Vector2f shotCoordinates)
 {
 	float elapsedTimeAsSeconds = shotClock.getElapsedTime().asSeconds();
-	if (elapsedTimeAsSeconds >= 0.3 && mAmmo > 0) { // weapon fire rate
+	if (elapsedTimeAsSeconds >= fireRate && mAmmo > 0) { // weapon fire rate
 		// Trigger sound / visual effects
 		shotSound.play();
 		// wait until another shot is able to be fired 

@@ -1,5 +1,5 @@
-#include "TextureManager.h"
 #include <assert.h>
+#include "TextureManager.h"
 
 TextureManager* TextureManager::m_s_Instance = nullptr;
 

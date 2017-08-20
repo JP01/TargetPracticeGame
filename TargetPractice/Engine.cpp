@@ -1,16 +1,12 @@
-#include "Engine.h"
 #include <iostream>
-
+#include "Engine.h"
+#include "Config.h"
 
 Engine::Engine(sf::Vector2f windowResolution)
-	: mBackgroundTextureFilepath("../Resources/map2.png")
-	, playerTextureFilepath("../Resources/player.png")
-	, botTextureFilepath("../Resources/bot.png")
-	, ammoTextureFilepath("../Resources/ammo.png")
-	, mWindowResX(windowResolution.x)
+	: mWindowResX(windowResolution.x)
 	, mWindowResY(windowResolution.y)
 	, playerStartingPosition(sf::Vector2f(mWindowResX * 0.50, mWindowResY * 0.90))
-	, player(playerStartingPosition, playerTextureFilepath)
+	, player(playerStartingPosition, Config::PLAYER_TX_FILEPATH)
 	, mPlayArea(sf::Vector2f(mWindowResX * 0.83, mWindowResY * 0.15)) // Size of the play area
 	, hud(player)
 {
@@ -25,7 +21,7 @@ Engine::Engine(sf::Vector2f windowResolution)
 	mWindow.setFramerateLimit(120); // Set the frame limit so that we don't overload CPU needlessly
 	
 	// Add a background
-	mBackgroundSprite.setTexture(tm.getTexture(mBackgroundTextureFilepath));
+	mBackgroundSprite.setTexture(tm.getTexture(Config::BG_TX_FILEPATH));
 
 	// Position the play area
 	mPlayArea.setPosition(sf::Vector2f(mWindowResX * 0.10, mWindowResY * 0.80));
@@ -53,6 +49,9 @@ void Engine::start()
 	soundTrack.setLoop(true);
 	soundTrack.play();
 
+	// Wether the window is in focus and should accept input
+	bool hasFocus = false;
+
 	while (mWindow.isOpen())
 	{
 		// Restart the clock and save elapsed time to dt
@@ -62,20 +61,40 @@ void Engine::start()
 		sf::Event windowEvent;
 		while (mWindow.pollEvent(windowEvent))
 		{
-			if (sf::Event::Closed)
+			switch (windowEvent.type)
+			{
+			// Window closed event
+			case sf::Event::Closed:
 				mWindow.close();
+				break;
+
+			// Loss of window focus event
+			case sf::Event::MouseLeft:
+				hasFocus = false;
+				break;
+			case sf::Event::MouseEntered:
+				hasFocus = true;
+				break;
+			case sf::Event::LostFocus:
+				hasFocus = false;
+				break;
+			case sf::Event::GainedFocus:
+				hasFocus = true;
+				break;
+			}
 		}
 		// Handle the player quitting
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
 			mWindow.close();
 
+		// Update game if gamestate == playing
 		if (player.getHealth() > 0) {
-			inputHandler();
+			if (hasFocus)
+				inputHandler();
 			update(dtAsSeconds);
 		}
 		draw();
 	}
-
 }
 
 sf::Vector2f Engine::randomLocation(sf::FloatRect area)
@@ -102,7 +121,7 @@ std::unique_ptr<Bot> Engine::spawnNewBot()
 	spawnArea.width = mWindowResX * 0.60;
 	spawnArea.height = mWindowResY * 0.5;
 
-	return std::unique_ptr<Bot>(new Bot(randomLocation(spawnArea), botTextureFilepath));
+	return std::unique_ptr<Bot>(new Bot(randomLocation(spawnArea), Config::BOT_TX_FILEPATH));
 }
 
 
@@ -114,7 +133,7 @@ std::unique_ptr<Pickup> Engine::spawnNewPickup()
 
 	spawnArea.width = mPlayArea.getSize().x;
 	spawnArea.height = mPlayArea.getSize().y - 40.0; // minus 40 to make sure it doesn't spawn too low on the screen 
-	return std::unique_ptr<Pickup>(new Pickup(randomLocation(spawnArea), ammoTextureFilepath));
+	return std::unique_ptr<Pickup>(new Pickup(randomLocation(spawnArea), Config::AMMO_TX_FILEPATH));
 }
 
 
@@ -162,6 +181,7 @@ void Engine::mouseHandler()
 
 	// If mouse is within the window bounds then act
 	player.aimAt(mousePosition);
+
 	// Handle shotting
 	if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
 		if (player.shoot(mousePosition))

@@ -2,9 +2,11 @@
 #include <utility>
 #include "Actor.h"
 #include "TextureManager.h"
+#include "Config.h"
+
 Actor::Actor()
 {
-	Actor(sf::Vector2f(400, 0), "ActorDefault");
+	Actor(sf::Vector2f(400, 0), Config::BOT_TX_FILEPATH);
 }
 
 

@@ -32,7 +32,7 @@
     <ClInclude Include="Actor.h" />
     <ClInclude Include="Bot.h" />
     <ClInclude Include="Engine.h" />
-    <ClInclude Include="GameConfiguration.h" />
+    <ClInclude Include="Config.h" />
     <ClInclude Include="HUD.h" />
     <ClInclude Include="Pickup.h" />
     <ClInclude Include="Player.h" />

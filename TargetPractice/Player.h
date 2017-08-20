@@ -34,6 +34,8 @@ private:
 	int mHealth = 100; // Starting health
 	int mScore = 0; // Starting score
 
+	float fireRate = 0.2; // Time between each shot
+
 	sf::SoundBuffer shotSoundBuffer;
 	sf::Sound shotSound;
 	sf::SoundBuffer reloadingSoundBuffer;
