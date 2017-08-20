@@ -1,4 +1,5 @@
 #include <iostream>
+#include <math.h>
 #include "Engine.h"
 #include "Config.h"
 
@@ -9,6 +10,7 @@ Engine::Engine(sf::Vector2f windowResolution)
 	, player(playerStartingPosition, Config::PLAYER_TX_FILEPATH)
 	, mPlayArea(sf::Vector2f(mWindowResX * 0.83, mWindowResY * 0.15)) // Size of the play area
 	, hud(player)
+	, mBotKills(0)
 {
 	// Setup the game window
 	sf::ContextSettings settings;
@@ -45,7 +47,7 @@ void Engine::start()
 	// Timer setup
 	sf::Clock clock;
 	sf::Music soundTrack;
-	soundTrack.openFromFile("../Resources/TPOST.ogg");
+	soundTrack.openFromFile(Config::THEME_MUS_FILEPATH);
 	soundTrack.setLoop(true);
 	soundTrack.play();
 
@@ -54,6 +56,7 @@ void Engine::start()
 
 	while (mWindow.isOpen())
 	{
+		soundTrack.setPitch(1.0);
 		// Restart the clock and save elapsed time to dt
 		sf::Time dt = clock.restart();
 		float dtAsSeconds = dt.asSeconds();
@@ -68,7 +71,7 @@ void Engine::start()
 				mWindow.close();
 				break;
 
-			// Loss of window focus event
+			// Loss of window focus event handling
 			case sf::Event::MouseLeft:
 				hasFocus = false;
 				break;
@@ -87,6 +90,14 @@ void Engine::start()
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
 			mWindow.close();
 
+		// Debugging - Slow down game speed
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
+		{
+			dtAsSeconds /= 10;
+			soundTrack.setPitch(0.5);
+		}
+
+
 		// Update game if gamestate == playing
 		if (player.getHealth() > 0) {
 			if (hasFocus)
@@ -97,9 +108,9 @@ void Engine::start()
 	}
 }
 
+
 sf::Vector2f Engine::randomLocation(sf::FloatRect area)
 {
-
 	int minX = area.left;
 	int minY = area.top;
 	int maxX = area.left + area.width;
@@ -173,6 +184,22 @@ void Engine::keyboardHandler()
 
 }
 
+int scoreCalculator(Bot& bot, sf::Vector2f mousePosition)
+{
+	sf::Vector2f center = bot.getCenter();
+	std::cout << "Center of bot = (" << center.x << ", " << center.y << ") " << std::endl;
+	std::cout << "Shooting at   = (" << mousePosition.x << ", " << mousePosition.y << ") " << std::endl;
+	// Use pythagoras theorem to determine if click position is within bullradius
+	float shotOffset = sqrt(pow(abs(mousePosition.x - center.x), 2) + pow(abs(mousePosition.y - center.y), 2));
+	std::cout << "Shot offset: " << shotOffset << std::endl;
+	float bullseye = 5.0;
+	float innerRing = 16.0;
+	if (shotOffset <= bullseye)
+		return 5;
+	if (shotOffset <= innerRing)
+		return 3;
+	return 1;
+}
 
 void Engine::mouseHandler()
 {
@@ -186,14 +213,17 @@ void Engine::mouseHandler()
 	if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
 		if (player.shoot(mousePosition))
 		{
-			// Check for hits
+			// Check for hits and add score
 			for (auto& bot : bots) {
 				if (bot->getBoundingBox().contains(mousePosition)) {
-					// Replace this bot with a new one
+					int score = scoreCalculator(*bot, mousePosition);
+					std::cout << "bot hit, scored: " << score << std::endl;
+					score += player.getScore();
+					player.setScore(score);
+
+					// Replace this bot with a new 
 					bot = spawnNewBot();
-					int newScore = player.getScore();
-					player.setScore(++newScore);
-					std::cout << "bot hit" << std::endl;
+					mBotKills++;
 				}
 			}
 		}
@@ -204,7 +234,7 @@ void Engine::mouseHandler()
 void Engine::botMover()
 {
 	// Bot speed increases by 1% every time player scores
-	float botSpeed = 150 * (1 + (player.getScore() / 100.0));
+	float botSpeed = 150 * (1 + (mBotKills / 100.0));
 
 	for (auto &bot : bots)
 	{
@@ -231,13 +261,14 @@ void Engine::update(float dtAsSeconds)
 	hud.update(dtAsSeconds);
 	
 	// If 10 bots have been killed spawn some ammo
-	if ((player.getScore() > 0) && (player.getScore() % 10 == 0))
+	if ((mBotKills > 0) && (mBotKills % 10 == 0))
 	{
-		if (pickups.size() == 0) {
+		if (pickups.empty()) {
 			pickups.push_back(spawnNewPickup());
 		}
 	}
 
+	// Determine if the player has picked up ammo
 	bool ammoGot = false;
 	for (auto &pickup : pickups) {
 		pickup->update(dtAsSeconds);
@@ -247,8 +278,6 @@ void Engine::update(float dtAsSeconds)
 			currentAmmo += 15;
 			player.setAmmo(currentAmmo);
 			ammoGot = true;
-			int score = player.getScore();
-			player.setScore(++score);
 		}
 	}
 	if (ammoGot)

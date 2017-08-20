@@ -7,6 +7,7 @@
 #include "Player.h"
 #include "Bot.h"
 #include "HUD.h"
+#include "ParticleSystem.h"
 
 class Engine
 {
@@ -36,6 +37,8 @@ private:
 	// Player
 	sf::Vector2f playerStartingPosition;
 	Player player;
+	int mBotKills; // The number of bots killed by the player this round
+	int ammoCratesLooted; // The number of ammo crates the player has picked up
 
 	// Bots
 	std::vector<std::unique_ptr<Bot>> bots;
@@ -50,7 +53,6 @@ private:
 	// Pickups
 	std::vector<std::unique_ptr<Pickup>> pickups;
 	std::unique_ptr<Pickup> spawnNewPickup();
-	int ammoPickupsCount = 0;
 
 	// Handle input
 	void inputHandler();
