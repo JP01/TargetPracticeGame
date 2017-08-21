@@ -278,6 +278,9 @@ void Engine::update(float dtAsSeconds)
 			currentAmmo += 15;
 			player.setAmmo(currentAmmo);
 			ammoGot = true;
+			// Dirty workaround, add another bot kill to ensure another ammo doesn't spawn
+			// TODO add ammo spawn counting to resolve this bug
+			mBotKills++;
 		}
 	}
 	if (ammoGot)
