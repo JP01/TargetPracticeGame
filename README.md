@@ -6,4 +6,5 @@ Alpha on Itch.io
 https://jpm01.itch.io/target-practice
 
 Gameplay video
+
 [![Playthrough](https://img.youtube.com/vi/ndGvBEtLDRQ/0.jpg)](https://www.youtube.com/watch?v=ndGvBEtLDRQ)
